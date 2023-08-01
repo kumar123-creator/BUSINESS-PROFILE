@@ -23,7 +23,7 @@
       if (response.ok) {
         const data = await response.json();
 		console.log('API response:', data);
-        timezones = data; // Assuming the API returns an array of timezones in the format: [{ code: '...', name: '...' }, ...]
+        timezones =  data.data; // Assuming the API returns an array of timezones in the format: [{ code: '...', name: '...' }, ...]
       } else {
         console.error('Failed to fetch timezones from the API');
       }
