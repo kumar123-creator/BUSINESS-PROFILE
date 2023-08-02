@@ -10,10 +10,11 @@
 	let website = '';
 	let dateFormat = '';
 	let timezone = '';
-	let logoImage;
 	let currencies = [];
     let currencyCode = '';
 	let timezones = [];
+	let logoImage = new Image();
+
 	
  // Function to fetch default values from API
  const fetchDefaultValues = async () => {
@@ -58,19 +59,39 @@
 	logoImage.src = 'https://s3-eu-west-1.amazonaws.com/recruitly-public/334fbbc8-6ab1-49d1-bede-5ead2a0b1a56/43aa5940-e9b2-406a-a826-99a405a7a343.jpeg';
   });
   
-	const handleSubmit = () => {
-	  // Here, you can handle the form submission and update the profile using the entered values.
-	  // For simplicity, we are just logging the values to the console.
-	  console.log('Company Name:', companyName);
-	  console.log('Company Logo:', companyLogo);
-	  console.log('Address:', address);
-	  console.log('Phone:', phone);
-	  console.log('Website:', website);
-	  console.log('Currency:', currencyCode);
-	  console.log('Preferred Date Format:', dateFormat);
-	  console.log('Timezone:', timezone);
-	};
-	
+  const handleSubmit = async () => {
+  try {
+    const response = await fetch("https://api.recruitly.io/api/business/profile/save?apiKey=TEST45684CB2A93F41FC40869DC739BD4D126D77", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        systemRecordLabel: companyName,
+        fullAddressLine: address,
+        phone,
+        website,
+        currencyCode,
+        preferredDateFormat: dateFormat,
+        timeZone: timezone,
+        // Add other properties as needed
+      }),
+    });
+
+	const responseData = await response.json(); // Try to get response data even if the request is not successful
+  console.log("Response Status:", response.status);
+  console.log("Response Data:", responseData);
+
+    if (response.ok) {
+      console.log("Profile updated successfully");
+    } else {
+      console.error("Failed to update profile");
+    }
+  } catch (error) {
+    console.error("Error updating profile:", error);
+  }
+};
+
   </script>
   
   <style>
@@ -93,6 +114,7 @@
 	color: darkblue;
   }
   </style>
+  
   <div class="form-container">
 	<h1 style="text-align: center;">Business Profile</h1>
   <form on:submit|preventDefault={handleSubmit}>
@@ -114,7 +136,7 @@
 
 	  <div>
 		<Label for="phone" class="mb-2">Phone number</Label>
-		<Input type="tel" id="phone" bind:value={phone} placeholder="123-45-678" pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}" required />
+		<Input type="tel" id="phone" bind:value={phone} placeholder="12345-67890"  title="Please use the format XXXXX-XXXXX or XXXXXXXXXX" required />
 	  </div>
 
 	  <div>
