@@ -12,11 +12,31 @@
 	let timezone = '';
 	let logoImage;
 	let currencies = [];
-    let selectedCurrency = '';
+    let currencyCode = '';
 	let timezones = [];
+	
+ // Function to fetch default values from API
+ const fetchDefaultValues = async () => {
+    try {
+      const response = await fetch("https://api.recruitly.io/api/business/profile?apiKey=TEST45684CB2A93F41FC40869DC739BD4D126D77");
+      const data = await response.json();
+      console.log('Default Values API response:', data);
 
+      // Populate the input fields with fetched data
+      companyName = data.systemRecordLabel;
+      address = data.fullAddressLine;
+      phone = data.phone;
+      website = data.website;
+      currencyCode = data.currencyCode.code;
+      dateFormat = data.preferredDateFormat;
+      timezone = data.timeZone;
+    } catch (error) {
+      console.error("Failed to fetch default values:", error);
+    }
+  };
 
 	onMount(async () => {
+		await fetchDefaultValues();
     try {
       const response = await fetch("https://api.recruitly.io/api/lookup/currency?apiKey=TEST27306FA00E70A0F94569923CD689CA9BE6CA");
       const data = await response.json();
@@ -46,7 +66,7 @@
 	  console.log('Address:', address);
 	  console.log('Phone:', phone);
 	  console.log('Website:', website);
-	  console.log('Currency:', selectedCurrency);
+	  console.log('Currency:', currencyCode);
 	  console.log('Preferred Date Format:', dateFormat);
 	  console.log('Timezone:', timezone);
 	};
@@ -104,7 +124,7 @@
 
 	  <div>
 		<Label for="currency" class="mb-2">Currency</Label>
-		<select id="currency" bind:value={selectedCurrency} required>
+		<select id="currency" bind:value={currencyCode} required>
 			<option value="">Select Currency</option>
 		  {#each currencies as currency}
 		  <option value={currency.code}>{currency.name}</option>
@@ -114,9 +134,15 @@
 	  
 	  <div>
 		<Label for="date_format" class="mb-2">Preferred date format</Label>
-		<Input type="text" id="date_format" bind:value={dateFormat} required />
-	  </div
-	  >
+		<select id="date_format" bind:value={dateFormat} required>
+			<option value="">Select Date Format</option>
+			<option value="default">Default</option>
+			<option value="pretty">Pretty</option>
+			<option value="date">Date Only</option>
+			<option value="datetime">Date and Time Only</option>
+		</select>
+	</div>
+	  
 	  <div>
 		<Label for="timezone" class="mb-2">Timezone</Label>
 		<select id="timezone" bind:value={timezone} required>
