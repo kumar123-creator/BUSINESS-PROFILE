@@ -10,9 +10,7 @@
 	  cityName: '',
 	  regionName: '',
 	  postCode: '',
-	  countryCode: '',
-	  latitude: '',
-	  longitude: ''
+	  countryCode: ''
 	};
 	let phone = '';
 	let website = '';
@@ -38,9 +36,7 @@
 		  cityName: data.address.cityName,
 		  regionName: data.address.regionName,
 		  postCode: data.address.postCode,
-		  countryCode: data.address.countryCode,
-		  latitude: data.address.latitude,
-		  longitude: data.address.longitude
+		  countryCode: data.address.countryCode
 		};
 		phone = data.phone;
 		website = data.website;
@@ -91,9 +87,7 @@
 		  cityName: address.cityName,
 		  regionName: address.regionName,
 		  postCode: address.postCode,
-		  countryCode: address.countryCode,
-		  latitude: address.latitude,
-		  longitude: address.longitude
+		  countryCode: address.countryCode
 		},
 		phone,
 		website,
@@ -132,6 +126,20 @@
     font-weight: bold;
 	color: darkblue;
   }
+  .form-container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid black;
+    border-radius: 8px;
+    background-color: #f5f5f5;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+
   </style>
   
   <div class="form-container">
@@ -144,7 +152,7 @@
   </div>
 
   <div>
-    <Label for="addressLine" class="mb-2">Address Line</Label>
+    <Label for="addressLine" class="mb-2">Address </Label>
     <Input type="text" id="addressLine" bind:value={address.addressLine} required />
   </div>
 
@@ -168,15 +176,6 @@
     <Input type="text" id="countryCode" bind:value={address.countryCode} required />
   </div>
 
-  <div>
-    <Label for="latitude" class="mb-2">Latitude</Label>
-    <Input type="text" id="latitude" bind:value={address.latitude} required />
-  </div>
-
-  <div>
-    <Label for="longitude" class="mb-2">Longitude</Label>
-    <Input type="text" id="longitude" bind:value={address.longitude} required />
-  </div>
 
   <div>
     <Label for="phone" class="mb-2">Phone number</Label>
@@ -192,15 +191,20 @@
     <Label for="currencyCode" class="mb-2">Currency Code</Label>
     <select id="currencyCode" bind:value={currencyCode} required>
       {#each currencies as currency}
-        <option value={currency.code}>{currency.name} ({currency.code})</option>
+        <option value={currency.code}>{currency.name} </option>
       {/each}
     </select>
   </div>
 
   <div>
-    <Label for="preferredDateFormat" class="mb-2">Preferred Date Format</Label>
-    <Input type="text" id="preferredDateFormat" bind:value={preferredDateFormat} required />
+	<Label for="preferredDateFormat" class="mb-2">Preferred Date Format</Label>
+	<select id="preferredDateFormat" bind:value={preferredDateFormat} required>
+	  <option value="pretty">Pretty</option>
+	  <option value="dateOnly">Date Only</option>
+	  <option value="dateTimeOnly">Date and Time Only</option>
+	</select>
   </div>
+  
 
   <div>
 	<Label for="timeZone" class="mb-2">Time Zone</Label>
