@@ -187,34 +187,45 @@
     <Input type="url" id="website" bind:value={website} placeholder="flowbite.com" required />
   </div>
 
-  <div>
-    <Label for="currencyCode" class="mb-2">Currency Code</Label>
-    <select id="currencyCode" bind:value={currencyCode} required>
-      {#each currencies as currency}
-        <option value={currency.code}>{currency.name} </option>
-      {/each}
-    </select>
-  </div>
+  <div class="mb-6"> 
+	<label for="currencyCode" class="block text-sm font-medium text-gray-700 dark:text-white">Currency:</label>
+	 <div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700"> 
+		<select id="currencyCode" bind:value={currencyCode} required class="block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600"> 
+			{#each currencies as currency} 
+			<option value={currency.code}>{currency.name} ({currency.code})</option>
+			{/each} 
+		</select> 
+	</div>
 
-  <div>
-	<Label for="preferredDateFormat" class="mb-2">Preferred Date Format</Label>
-	<select id="preferredDateFormat" bind:value={preferredDateFormat} required>
-	  <option value="pretty">Pretty</option>
-	  <option value="dateOnly">Date Only</option>
-	  <option value="dateTimeOnly">Date and Time Only</option>
-	</select>
-  </div>
-  
+	<div>
+	<label for="preferredDateFormat" class="block text-sm font-medium text-gray-700 dark:text-white">Preferred Date Format</label>
+	<div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
+	  <select id="preferredDateFormat" bind:value={preferredDateFormat} required class="block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600">
+		<option value="default" >Pretty (e.g., 1 Day Ago/2 Week Ago, etc.)</option>
+		<option >Date only (e.g., 12/31/2020)</option>
+		<option >Date and Time (e.g., 12/31/2020 15:00:00)</option>
+		<option >Date and Time (e.g., 12/31/2020 03:00PM)</option>
+	  </select>
+	</div>
+	</div>
+	
+	<div class="mb-6">
 
-  <div>
-	<Label for="timeZone" class="mb-2">Time Zone</Label>
-	<select id="timeZone" bind:value={timeZone} required>
-	  {#each timeZones as timeZoneOption}
-		<option value={timeZoneOption.code}>{timeZoneOption.name}</option>
-	  {/each}
-	</select>
-  </div>
-  
+        <label for="timezone" class="block text-sm font-medium text-gray-700 dark:text-white">Timezone</label>
+
+        <div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
+
+          <select id="timezone" bind:value={timeZone} required class="block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600">
+
+			{#each timeZones as timeZoneOption}
+
+			<option value={timeZoneOption.code}>{timeZoneOption.name}</option>
+
+            {/each}
+
+          </select>
+
+          </div>
 
   <div>
     <Label for="preferredCountryCode" class="mb-2">Preferred Country Code</Label>
