@@ -6,11 +6,7 @@
 	let id = '';
 	let name = '';
 	let address = {
-	  addressLine: '',
-	  cityName: '',
-	  regionName: '',
-	  postCode: '',
-	  countryCode: ''
+	  addressLine: ''
 	};
 	let phone = '';
 	let website = '';
@@ -22,6 +18,9 @@
 	let dataFetched = false;
 	let currencies = [];
 	let timeZones = [];
+	let logoImage = new Image();
+	let inputRef;
+	let imageUrl = '';
   
 	async function fetchData() {
 	  try {
@@ -32,11 +31,7 @@
 		id = data.id;
 		name = data.name;
 		address = {
-		  addressLine: data.address.addressLine,
-		  cityName: data.address.cityName,
-		  regionName: data.address.regionName,
-		  postCode: data.address.postCode,
-		  countryCode: data.address.countryCode
+		  addressLine: data.address.addressLine
 		};
 		phone = data.phone;
 		website = data.website;
@@ -76,6 +71,7 @@
 	  fetchData();
 	  fetchCurrencies();
 	  fetchTimeZones();
+	  fetchImage(); 
 	});
   
 	async function saveFormData() {
@@ -83,11 +79,7 @@
 		id,
 		name,
 		address: {
-		  addressLine: address.addressLine,
-		  cityName: address.cityName,
-		  regionName: address.regionName,
-		  postCode: address.postCode,
-		  countryCode: address.countryCode
+		  addressLine: address.addressLine
 		},
 		phone,
 		website,
@@ -116,7 +108,72 @@
 		console.error("Error updating data:", error);
 	  }
 	}
+
+	
+	async function fetchImage() {
+    try {
+      const response = await fetch("https://api.recruitly.io/api/business/profile?apiKey=TEST45684CB2A93F41FC40869DC739BD4D126D77");
+      const data = await response.json();
+      imageUrl = data.logo.url; // Assuming the image URL is in the 'logo' property
+	  fetchImage();
+      console.log("Image URL:", imageUrl);
+    } catch (error) {
+      console.error("Error fetching image:", error);
+    }
+  }
+
+  function handleLogoClick(){
+	const inputElement = document.createElement("input");
+	inputElement.type = "file";
+	inputElement.accept = "image/*";
+	inputElement.addEventListener("change", (event) => handleLogoUpload(event, inputElement));
+	inputElement.click();
+  }
   
+
+	async function handleLogoUpload(event, inputElement) {
+		inputElement.click();
+    const file = event.target.files[0];
+
+    if (file) {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('profilePic', 'true');
+      formData.append('type', 'TENANT');
+
+      try {
+        const response = await fetch('https://api.recruitly.io/api/image/upload?apiKey=TEST45684CB2A93F41FC40869DC739BD4D126D77', {
+          method: 'POST',
+		  headers: {
+			Cookie: "SESSION=NDU1ZDRjNmUtNDg1ZC00NjVhLWJhNmItN2NlZmE4NzYxMWRm",
+            "Cache-Control": "no-cache, no-store, must-revalidate", // Add the Cache-Control header
+		    },
+          body: formData,
+        });
+
+        if (response.ok) {
+          const responseData = await response.json();
+          console.log('Image uploaded:', responseData);
+		  imageUrl = responseData.url; 
+		  const imgElement = document.getElementById('uploadedImage');
+          imgElement.src = URL.createObjectURL(file);
+		   // Call the function again to ensure image is uploaded
+        await fetchData();
+          alert('Company logo updated successfully');
+        
+	}
+		else {
+          console.error('Image upload failed:', response);
+          alert('Failed to update company logo');
+        }
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        alert('An error occurred while updating the company logo');
+      }
+
+    }
+  }fetchImage();
+
   </script>
   
   <style>
@@ -146,6 +203,16 @@
 	<h1 style="text-align: center;">Business Profile</h1>
 	{#if dataFetched}
 	  <form on:submit|preventDefault={saveFormData}>
+		<div class="mb-6">
+
+			<Label for="company_logo" class="mb-2">Company Logo</Label>
+	
+			<img id="uploadedImage" src="{imageUrl}" alt="Logo" on:click={handleLogoClick} style="cursor: pointer;" />
+	
+		   
+	
+		</div>
+
   <div>
     <Label for="company_name" class="mb-2">Company name</Label>
     <Input type="text" id="company_name" bind:value={name} required />
@@ -155,27 +222,6 @@
     <Label for="addressLine" class="mb-2">Address </Label>
     <Input type="text" id="addressLine" bind:value={address.addressLine} required />
   </div>
-
-  <div>
-    <Label for="cityName" class="mb-2">City Name</Label>
-    <Input type="text" id="cityName" bind:value={address.cityName} required />
-  </div>
-
-  <div>
-    <Label for="regionName" class="mb-2">Region Name</Label>
-    <Input type="text" id="regionName" bind:value={address.regionName} required />
-  </div>
-
-  <div>
-    <Label for="postCode" class="mb-2">Post Code</Label>
-    <Input type="text" id="postCode" bind:value={address.postCode} required />
-  </div>
-
-  <div>
-    <Label for="countryCode" class="mb-2">Country Code</Label>
-    <Input type="text" id="countryCode" bind:value={address.countryCode} required />
-  </div>
-
 
   <div>
     <Label for="phone" class="mb-2">Phone number</Label>
