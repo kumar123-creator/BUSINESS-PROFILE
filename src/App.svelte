@@ -197,6 +197,11 @@
     flex-direction: column;
   }
 
+  .logo-image {
+        cursor: pointer;
+        max-width: 100px; /* Set a maximum width for the image */
+        height: auto; /* Maintain the aspect ratio */
+    }
   </style>
   
   <div class="form-container">
@@ -207,7 +212,7 @@
 
 			<Label for="company_logo" class="mb-2">Company Logo</Label>
 	
-			<img id="uploadedImage" src="{imageUrl}" alt="Logo" on:click={handleLogoClick} style="cursor: pointer;" />
+			<img id="uploadedImage" src="{imageUrl}" alt="Logo" on:click={handleLogoClick} class="logo-image" />
 	
 		   
 	
