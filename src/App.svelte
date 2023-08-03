@@ -192,7 +192,7 @@
 	 <div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700"> 
 		<select id="currencyCode" bind:value={currencyCode} required class="block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600"> 
 			{#each currencies as currency} 
-			<option value={currency.code}>{currency.name} ({currency.code})</option>
+			<option value={currency.code}>{currency.name}</option>
 			{/each} 
 		</select> 
 	</div>
