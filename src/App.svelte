@@ -24,7 +24,7 @@
       console.log('Default Values API response:', data);
 
       // Populate the input fields with fetched data
-      companyName = data.systemRecordLabel;
+      companyName = data.name;
       address = data.fullAddressLine;
       phone = data.phone;
       website = data.website;
