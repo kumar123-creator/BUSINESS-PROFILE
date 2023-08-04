@@ -6,10 +6,18 @@
 	let id = '';
 	let name = '';
 	let address = {
-	  addressLine: ''
-	};
+	  addressLine: '',
+	  cityName: "",
+        regionName: "",
+        postCode: "",
+        countryCode: "",
+        latitude: "",
+        longitude: "",
+       };
+	
 	let phone = '';
 	let website = '';
+	
 	let currencyCode = '';
 	let preferredDateFormat = '';
 	let timeZone = '';
@@ -31,8 +39,14 @@
 		id = data.id;
 		name = data.name;
 		address = {
-		  addressLine: data.address.addressLine
-		};
+		  addressLine: data.address.addressLine,
+		  cityName: data.address.cityName,
+      regionName: data.address.regionName,
+      postCode: data.address.postCode,
+      countryCode: data.address.countryCode,
+      latitude: data.address.latitude,
+      longitude: data.address.longitude,
+    };
 		phone = data.phone;
 		website = data.website;
 		currencyCode = data.currencyCode.code;
@@ -79,8 +93,14 @@
 		id,
 		name,
 		address: {
-		  addressLine: address.addressLine
-		},
+		  addressLine: address.addressLine,
+		  cityName: address.cityName,
+      regionName:address.regionName,
+      postCode:address.postCode,
+      countryCode:address.countryCode,
+      latitude:address.latitude,
+      longitude:address.longitude,
+    },
 		phone,
 		website,
 		currencyCode: {
@@ -88,9 +108,10 @@
 		},
 		preferredDateFormat,
 		timeZone,
-		preferredCountries,
+		preferredCountries: preferredCountries,
 		preferredCountryCode
 	  };
+	  console.log("Update data:", JSON.stringify(Update));
   
 	  try {
 		const response = await fetch('https://api.recruitly.io/api/business/profile/save?apiKey=TEST45684CB2A93F41FC40869DC739BD4D126D77', {
@@ -224,8 +245,8 @@
   </div>
 
   <div>
-    <Label for="addressLine" class="mb-2">Address </Label>
-    <Input type="text" id="addressLine" bind:value={address.addressLine} required />
+    <Label for="address" class="mb-2">Address </Label>
+    <Input type="text" id="address" bind:value={address.cityName} required />
   </div>
 
   <div>
