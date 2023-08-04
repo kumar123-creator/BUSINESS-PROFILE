@@ -2,6 +2,8 @@
 	import { onMount } from 'svelte';
 	import { Input, Label, Button } from 'flowbite-svelte';
 	import 'flowbite/dist/flowbite.css';
+	import 'intl-tel-input/build/css/intlTelInput.css';
+	import intlTelInput from 'intl-tel-input';
   
 	let id = '';
 	let name = '';
@@ -29,6 +31,7 @@
 	let logoImage = new Image();
 	let inputRef;
 	let imageUrl = '';
+	let phoneInput; // Reference to the #phone element
   
 	async function fetchData() {
 	  try {
@@ -82,6 +85,18 @@
   }
   
 	onMount(() => {
+		 // Ensure the #phone element is available before initializing intlTelInput
+		 if (phoneInput) {
+      const iti = window.intlTelInput(phoneInput, {
+        utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
+      });
+
+      // Listen for changes and update the phone variable
+      phoneInput.addEventListener("change", () => {
+        phone = iti.getNumber();
+      });
+	}
+
 	  fetchData();
 	  fetchCurrencies();
 	  fetchTimeZones();
@@ -223,6 +238,18 @@
         max-width: 100px; /* Set a maximum width for the image */
         height: auto; /* Maintain the aspect ratio */
     }
+
+	.input-group {
+  display: flex;
+  align-items: center;
+}
+
+.iti__flag {
+  width: 20px;
+  height: auto;
+  margin-right: 5px;
+}
+
   </style>
   
   <div class="form-container">
@@ -250,9 +277,15 @@
   </div>
 
   <div>
-    <Label for="phone" class="mb-2">Phone number</Label>
-    <Input type="tel" id="phone" bind:value={phone} placeholder="12345-67890" title="Please use the format XXXXX-XXXXX or XXXXXXXXXX" required />
+	<Label for="phone" class="mb-2">Phone number</Label>
+	<div class="input-group">
+	  <span class="input-group-addon">
+		<img class="iti__flag" />
+	  </span>
+	  <Input type="tel" id="phone" bind:this={phoneInput} bind:value={phone} placeholder="12345-67890" title="Please use the format XXXXX-XXXXX or XXXXXXXXXX" required />
+	</div>
   </div>
+  
 
   <div>
     <Label for="website" class="mb-2">Website URL</Label>
