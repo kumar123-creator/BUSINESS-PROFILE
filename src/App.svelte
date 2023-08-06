@@ -1,5 +1,5 @@
 <script>
-	import { onMount } from 'svelte';
+	import { onMount, afterUpdate } from 'svelte';
 	import { Input, Label, Button } from 'flowbite-svelte';
 	import 'flowbite/dist/flowbite.css';
 	import 'intl-tel-input/build/css/intlTelInput.css';
@@ -85,7 +85,15 @@
   }
   
 	onMount(() => {
-		 // Ensure the #phone element is available before initializing intlTelInput
+
+	  fetchData();
+	  fetchCurrencies();
+	  fetchTimeZones();
+	  fetchImage(); 
+	});
+
+	afterUpdate(() => {
+		const phoneInput = document.querySelector("#phone");
 		 if (phoneInput) {
       const iti = window.intlTelInput(phoneInput, {
         utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
@@ -96,12 +104,9 @@
         phone = iti.getNumber();
       });
 	}
-
-	  fetchData();
-	  fetchCurrencies();
-	  fetchTimeZones();
-	  fetchImage(); 
 	});
+
+
   
 	async function saveFormData() {
 	  const updateData = {
@@ -151,7 +156,7 @@
       const response = await fetch("https://api.recruitly.io/api/business/profile?apiKey=TEST45684CB2A93F41FC40869DC739BD4D126D77");
       const data = await response.json();
       imageUrl = data.logo.url; // Assuming the image URL is in the 'logo' property
-	  fetchImage();
+	  //fetchImage();
       console.log("Image URL:", imageUrl);
     } catch (error) {
       console.error("Error fetching image:", error);
@@ -208,7 +213,17 @@
       }
 
     }
-  }fetchImage();
+  }
+
+  
+
+  function loadData() {
+    console.log('Fetching initial data...');
+    // Simulate an asynchronous operation (e.g., API call) using setTimeout
+    setTimeout(() => {
+      console.log('Initial data fetched.');
+    }, 2000); // Adjust the delay as needed
+  }
 
   </script>
   
@@ -239,17 +254,6 @@
         height: auto; /* Maintain the aspect ratio */
     }
 
-	.input-group {
-  display: flex;
-  align-items: center;
-}
-
-.iti__flag {
-  width: 20px;
-  height: auto;
-  margin-right: 5px;
-}
-
   </style>
   
   <div class="form-container">
@@ -257,13 +261,8 @@
 	{#if dataFetched}
 	  <form on:submit|preventDefault={saveFormData}>
 		<div class="mb-6">
-
 			<Label for="company_logo" class="mb-2">Company Logo</Label>
-	
 			<img id="uploadedImage" src="{imageUrl}" alt="Logo" on:click={handleLogoClick} class="logo-image" />
-	
-		   
-	
 		</div>
 
   <div>
@@ -278,12 +277,10 @@
 
   <div>
 	<Label for="phone" class="mb-2">Phone number</Label>
-	<div class="input-group">
-	  <span class="input-group-addon">
-		<img class="iti__flag" />
-	  </span>
-	  <Input type="tel" id="phone" bind:this={phoneInput} bind:value={phone} placeholder="12345-67890" title="Please use the format XXXXX-XXXXX or XXXXXXXXXX" required />
-	</div>
+	  <Input type="tel" id="phone" 
+	 	
+	  bind:this={phoneInput} bind:value={phone}  title="Please use the format XXXXX-XXXXX or XXXXXXXXXX" required />
+	
   </div>
   
 
@@ -341,4 +338,3 @@
 	  <p>Loading data...</p>
 	{/if}
   </div>
-  
