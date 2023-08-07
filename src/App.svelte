@@ -59,6 +59,7 @@
 		currencyCode = data.currencyCode.code;
 		preferredDateFormat = data.preferredDateFormat;
 		timeZone = data.timeZone;
+		defaultCountry = data.defaultCountry;
 		dataFetched = true;
 	  } catch (error) {
 		console.error("Error fetching data:", error);
@@ -143,7 +144,7 @@
         preferredCountries
 		
 	  };
-	  console.log("Update data:", JSON.stringify(Update));
+	  console.log("Update data:", JSON.stringify(updateData));
   
 	  try {
 		const response = await fetch('https://api.recruitly.io/api/business/profile/save?apiKey=TEST45684CB2A93F41FC40869DC739BD4D126D77', {
