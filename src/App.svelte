@@ -23,16 +23,19 @@
 	let currencyCode = '';
 	let preferredDateFormat = '';
 	let timeZone = '';
-	let preferredCountryCode = '';
-	let preferredCountries = [];
 	let dataFetched = false;
 	let currencies = [];
 	let timeZones = [];
-	let logoImage = new Image();
+	let defaultCountry = '';
+    let preferredCountries = [];
+    let countries = [];
+    let logoImage = new Image();
 	let inputRef;
 	let imageUrl = '';
 	let phoneInput; 
 	let iti; 
+
+	
 	
 	async function fetchData() {
 	  try {
@@ -56,8 +59,6 @@
 		currencyCode = data.currencyCode.code;
 		preferredDateFormat = data.preferredDateFormat;
 		timeZone = data.timeZone;
-		preferredCountryCode = data.preferredCountryCode;
-		preferredCountries = [data.preferredCountries];
 		dataFetched = true;
 	  } catch (error) {
 		console.error("Error fetching data:", error);
@@ -84,12 +85,24 @@
       console.error("Error fetching time zones:", error);
     }
   }
+
+  async function fetchCountries() {
+  try {
+    const response = await fetch("https://api.recruitly.io/api/lookup/countries?apiKey=TEST69513C4B379BD5594CD0AAC9ECA436CA2C83");
+    const countryData = await response.json();
+	console.log(countryData);
+    countries = countryData.data;
+  } catch (error) {
+    console.error("Error fetching countries:", error);
+  }
+}
   
 	onMount(() => {
 	  fetchData();
 	  fetchCurrencies();
 	  fetchTimeZones();
 	  fetchImage(); 
+	  fetchCountries();
 	});
 
 	afterUpdate(() => {
@@ -126,8 +139,9 @@
 		},
 		preferredDateFormat,
 		timeZone,
-		preferredCountries: preferredCountries,
-		preferredCountryCode
+		defaultCountry,
+        preferredCountries
+		
 	  };
 	  console.log("Update data:", JSON.stringify(Update));
   
@@ -315,15 +329,32 @@
           </select>
           </div>
 
-  <div>
-    <Label for="preferredCountryCode" class="mb-2">Preferred Country Code</Label>
-    <Input type="text" id="preferredCountryCode" bind:value={preferredCountryCode} required />
-  </div>
-
-  <div>
-    <Label for="preferredCountries" class="mb-2">Preferred Countries</Label>
-    <Input type="text" id="preferredCountries" bind:value={preferredCountries} required />
-  </div>
+		  <div class="mb-6">
+			<label for="defaultCountry" class="block text-sm font-medium text-gray-700 dark:text-white">
+			  Default Country To Display
+			</label>
+			<div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
+			  <select id="defaultCountry" bind:value={defaultCountry} required class="block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600">
+				{#each countries as countryOption}
+				  <option value={countryOption.code}>{countryOption.name}</option>
+				{/each}
+			  </select>
+			</div>
+		  </div>
+		  
+		  <div class="mb-6">
+			<label for="preferredCountries" class="block text-sm font-medium text-gray-700 dark:text-white">
+			  Preferred Countries To Display on Top
+			</label>
+			<div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
+			  <select id="preferredCountries" bind:value={preferredCountries} required multiple class="block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600">
+				{#each countries as countryOption}
+				  <option value={countryOption.code}>{countryOption.name}</option>
+				{/each}
+			  </select>
+			</div>
+		  </div>
+		  
 
   <Button type="submit" style="background-color: #007bff;">Update Profile</Button>
 </form>
