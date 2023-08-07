@@ -255,7 +255,7 @@
   </style>
   
   <div class="form-container">
-	<h1 style="text-align: center;">Business Profile</h1>
+	<h1 style="text-align: center;">COMPANY PROFILE</h1>
 	{#if dataFetched}
 	  <form on:submit|preventDefault={saveFormData}>
 		<div class="mb-6">
