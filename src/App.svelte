@@ -277,13 +277,9 @@
 
   <div>
 	<Label for="phone" class="mb-2">Phone number</Label>
-	  <Input type="tel" id="phone" 
-	 	
-	  bind:this={phoneInput} bind:value={phone}  title="Please use the format XXXXX-XXXXX or XXXXXXXXXX" required />
-	
+	  <Input type="tel" id="phone" bind:this={phoneInput} bind:value={phone}  title="Please use the format XXXXX-XXXXX or XXXXXXXXXX" required />
   </div>
   
-
   <div>
     <Label for="website" class="mb-2">Website URL</Label>
     <Input type="url" id="website" bind:value={website} placeholder="flowbite.com" required />
