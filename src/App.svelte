@@ -28,6 +28,7 @@
 	let timeZones = [];
 	let defaultCountry = '';
     let preferredCountries = [];
+	let selectedPreferredCountry = '';
     let countries = [];
     let logoImage = new Image();
 	let inputRef;
@@ -60,6 +61,7 @@
 		preferredDateFormat = data.preferredDateFormat;
 		timeZone = data.timeZone;
 		defaultCountry = data.defaultCountry;
+		preferredCountries = data.preferredCountries; 
 		dataFetched = true;
 	  } catch (error) {
 		console.error("Error fetching data:", error);
@@ -97,6 +99,28 @@
     console.error("Error fetching countries:", error);
   }
 }
+
+function handlePreferredCountryChange(event) {
+  const selectedCountryCode = event.target.value;
+
+  // Check if preferredCountries is defined and the selected country is not already in the array
+  if (preferredCountries && !preferredCountries.includes(selectedCountryCode)) {
+    preferredCountries = [selectedCountryCode, ...preferredCountries];
+  }
+
+  // Update the selectedPreferredCountry value
+  selectedPreferredCountry = selectedCountryCode;
+}
+
+
+// Inside your form's afterUpdate event
+afterUpdate(() => {
+  // ...
+  const preferredCountrySelect = document.querySelector("#preferredCountry");
+  if (preferredCountrySelect) {
+    preferredCountrySelect.addEventListener("change", handlePreferredCountryChange);
+  }
+});
   
 	onMount(() => {
 	  fetchData();
@@ -344,17 +368,32 @@
 		  </div>
 		  
 		  <div class="mb-6">
-			<label for="preferredCountries" class="block text-sm font-medium text-gray-700 dark:text-white">
-			  Preferred Countries To Display on Top
+			<label for="preferredCountry" class="block text-sm font-medium text-gray-700 dark:text-white">
+			  Preferred Country To Display on Top
 			</label>
 			<div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
-			  <select id="preferredCountries" bind:value={preferredCountries} required multiple class="block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600">
-				{#each countries as countryOption}
-				  <option value={countryOption.code}>{countryOption.name}</option>
-				{/each}
+			  <select id="preferredCountry" required class="block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600">
+				{#await countries}
+				  <p>Loading countries...</p>
+				{:then countryData}
+				  <option value="" disabled>Select a country</option>
+				  {#each countryData as countryOption}
+					<option value={countryOption.code}>{countryOption.name}</option>
+				  {/each}
+				{:catch error}
+				  <p>Error loading countries: {error.message}</p>
+				{/await}
 			  </select>
+			  <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+				<svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+				  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+				</svg>
+			  </div>
 			</div>
 		  </div>
+		  
+		  
+		  
 		  
 
   <Button type="submit" style="background-color: #007bff;">Update Profile</Button>
@@ -362,5 +401,5 @@
 
 	{:else}
 	  <p>Loading data...</p>
-	{/if}
-  </div>
+	  {/if}
+	</div>
