@@ -31,8 +31,8 @@
 	let logoImage = new Image();
 	let inputRef;
 	let imageUrl = '';
-	let phoneInput; // Reference to the #phone element
-	let iti; // Reference to the intlTelInput instance
+	let phoneInput; 
+	let iti; 
 	
 	async function fetchData() {
 	  try {
@@ -86,7 +86,6 @@
   }
   
 	onMount(() => {
-
 	  fetchData();
 	  fetchCurrencies();
 	  fetchTimeZones();
@@ -107,8 +106,6 @@
 	}
 	});
 
-
-  
 	async function saveFormData() {
 	  const updateData = {
 		id,
