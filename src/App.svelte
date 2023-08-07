@@ -32,7 +32,8 @@
 	let inputRef;
 	let imageUrl = '';
 	let phoneInput; // Reference to the #phone element
-  
+	let iti; // Reference to the intlTelInput instance
+	
 	async function fetchData() {
 	  try {
 		const response = await fetch("https://api.recruitly.io/api/business/profile?apiKey=TEST45684CB2A93F41FC40869DC739BD4D126D77");
@@ -94,8 +95,8 @@
 
 	afterUpdate(() => {
 		const phoneInput = document.querySelector("#phone");
-		 if (phoneInput) {
-      const iti = window.intlTelInput(phoneInput, {
+		if (phoneInput && !iti) {
+      iti = window.intlTelInput(phoneInput, {
         utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
       });
 
