@@ -4,6 +4,8 @@
 	import 'flowbite/dist/flowbite.css';
 	import 'intl-tel-input/build/css/intlTelInput.css';
 	import intlTelInput from 'intl-tel-input';
+	import { Select} from 'flowbite-svelte';
+	import { MultiSelect } from 'flowbite-svelte';
   
 	let id = '';
 	let name = '';
@@ -19,23 +21,32 @@
 	
 	let phone = '';
 	let website = '';
-	
 	let currencyCode = '';
 	let preferredDateFormat = '';
 	let timeZone = '';
 	let dataFetched = false;
 	let currencies = [];
 	let timeZones = [];
-	let defaultCountry = '';
-    let preferredCountries = [];
-	let selectedPreferredCountry = '';
-    let countries = [];
     let logoImage = new Image();
 	let inputRef;
 	let imageUrl = '';
 	let phoneInput; 
 	let iti; 
-
+	let mobilePreferences = {
+          preferredCountryCode: "",
+          preferredCountries: "",
+         };
+    let countryOptions = '';
+    let preferredCountriesOptions=[];
+    let preferredCountryCode = [];
+    let preferredCountryCode1 = [];  
+    let selectedLabels=[];
+    let countries = [];
+    let selectedCountry = null;
+    let selected = ["IN","AF"];
+    let preferredCountries = ["us", "gb"];
+    let preferredCountries1 = [];
+	let showDropdown = false;
 	
 	
 	async function fetchData() {
@@ -49,19 +60,22 @@
 		address = {
 		  addressLine: data.address.addressLine,
 		  cityName: data.address.cityName,
-      regionName: data.address.regionName,
-      postCode: data.address.postCode,
-      countryCode: data.address.countryCode,
-      latitude: data.address.latitude,
-      longitude: data.address.longitude,
+          regionName: data.address.regionName,
+          postCode: data.address.postCode,
+          countryCode: data.address.countryCode,
+          latitude: data.address.latitude,
+          longitude: data.address.longitude,
     };
 		phone = data.phone;
 		website = data.website;
 		currencyCode = data.currencyCode.code;
 		preferredDateFormat = data.preferredDateFormat;
 		timeZone = data.timeZone;
-		defaultCountry = data.defaultCountry;
-		preferredCountries = data.preferredCountries; 
+		preferredCountryCode = data.mobilePreferences.preferredCountryCode,
+        preferredCountries = data.mobilePreferences.preferredCountries.split(','); // Split the string into an array
+        console.log(preferredCountries);
+        preferredCountryCode1 = preferredCountryCode.toUpperCase();
+        console.log(preferredCountries1 );
 		dataFetched = true;
 	  } catch (error) {
 		console.error("Error fetching data:", error);
@@ -89,45 +103,65 @@
     }
   }
 
-  async function fetchCountries() {
-  try {
-    const response = await fetch("https://api.recruitly.io/api/lookup/countries?apiKey=TEST69513C4B379BD5594CD0AAC9ECA436CA2C83");
-    const countryData = await response.json();
-	console.log(countryData);
-    countries = countryData.data;
-  } catch (error) {
-    console.error("Error fetching countries:", error);
-  }
+  const fetchCountryData = async () => {
+      try {
+      const response = await fetch(
+        "https://api.recruitly.io/api/lookup/countries?apiKey=TEST69513C4B379BD5594CD0AAC9ECA436CA2C83" 
+             );
+   const responseData = await response.json();
+     if (Array.isArray(responseData.data)) {
+          countryOptions = responseData.data.map((country) => ({
+              value: country.code,
+              label: country.name,
+              }));
+        console.log("Country API response:", responseData);
+             } else {
+        console.error("Invalid country data format:", responseData);
+            }
+              } catch (error) {
+                 console.error("Error fetching country options:", error);
+
+ 
+
+                }
+          };
+
+          async function fetchCountries() {
+   try {
+    const response = await fetch(
+       "https://api.recruitly.io/api/lookup/countries?apiKey=TEST69513C4B379BD5594CD0AAC9ECA436CA2C83" 
+       );
+   if (!response.ok) {
+      throw new Error("Network response was not ok");
+      }
+        const responseData = await response.json();
+
+ 
+
+     if (Array.isArray(responseData.data)) {
+       countries = responseData.data.map((country) => ({
+           value: country.code,
+           name: country.name
+         }));
+      console.log("Fetched countries:", countries);
+      } 
+      else {
+       console.error("Invalid API response format:", responseData);
+      }
+   } catch (error) {
+  console.error("Error fetching countries:", error);
+}
 }
 
-function handlePreferredCountryChange(event) {
-  const selectedCountryCode = event.target.value;
-
-  // Check if preferredCountries is defined and the selected country is not already in the array
-  if (preferredCountries && !preferredCountries.includes(selectedCountryCode)) {
-    preferredCountries = [selectedCountryCode, ...preferredCountries];
-  }
-
-  // Update the selectedPreferredCountry value
-  selectedPreferredCountry = selectedCountryCode;
-}
-
-
-// Inside your form's afterUpdate event
-afterUpdate(() => {
-  // ...
-  const preferredCountrySelect = document.querySelector("#preferredCountry");
-  if (preferredCountrySelect) {
-    preferredCountrySelect.addEventListener("change", handlePreferredCountryChange);
-  }
-});
   
 	onMount(() => {
 	  fetchData();
 	  fetchCurrencies();
 	  fetchTimeZones();
 	  fetchImage(); 
-	  fetchCountries();
+	  fetchCountryData();
+      fetchCountries();
+	  
 	});
 
 	afterUpdate(() => {
@@ -164,8 +198,8 @@ afterUpdate(() => {
 		},
 		preferredDateFormat,
 		timeZone,
-		defaultCountry,
-        preferredCountries
+		preferredCountries,
+        preferredCountryCode: preferredCountryCode1.toLowerCase(),
 		
 	  };
 	  console.log("Update data:", JSON.stringify(updateData));
@@ -354,48 +388,43 @@ afterUpdate(() => {
           </select>
           </div>
 
-		  <div class="mb-6">
-			<label for="defaultCountry" class="block text-sm font-medium text-gray-700 dark:text-white">
-			  Default Country To Display
-			</label>
-			<div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
-			  <select id="defaultCountry" bind:value={defaultCountry} required class="block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600">
-				{#each countries as countryOption}
-				  <option value={countryOption.code}>{countryOption.name}</option>
-				{/each}
-			  </select>
+		  <div class="mb-3">
+			<Label for="country" class="mb-2">Default Country To Display</Label>
+			<Select class="block w-full rounded-lg bg-white border border-gray-300 text-gray-700 focus:outline-none focus:border-indigo-500" bind:value={preferredCountryCode1} on:change={(event) => {
+					   preferredCountryCode1 = event.target.value.toUpperCase();}}>
+			
+							 {#each countryOptions as country1}
+			<option value={country1.value}>{country1.label}</option> 
+						   {/each}
+			</Select>
 			</div>
-		  </div>
-		  
-		  <div class="mb-6">
-			<label for="preferredCountry" class="block text-sm font-medium text-gray-700 dark:text-white">
-			  Preferred Country To Display on Top
-			</label>
-			<div class="relative mt-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
-			  <select id="preferredCountry" required class="block w-full py-2.5 pl-3 pr-10 text-base border-transparent bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-white dark:focus:ring-gray-700 dark:focus:border-gray-600">
-				{#await countries}
-				  <p>Loading countries...</p>
-				{:then countryData}
-				  <option value="" disabled>Select a country</option>
-				  {#each countryData as countryOption}
-					<option value={countryOption.code}>{countryOption.name}</option>
-				  {/each}
-				{:catch error}
-				  <p>Error loading countries: {error.message}</p>
-				{/await}
-			  </select>
-			  <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-				<svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-				  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-				</svg>
-			  </div>
+			
+			
+			 
+			
+				 <div class="mb-3">
+			<Label class="mb-2">Preferred Countries To Display on Top</Label>
+			<div>
+			<input
+						type="text"
+						id="address"
+						bind:value={preferredCountries}
+						required
+						on:click={() => (showDropdown = !showDropdown)}
+					/>
+					{#if showDropdown}
+			<div class="dropdown">
+			<Select bind:value={preferredCountries} required multiple>
+								{#each countryOptions as country}
+			<option value={country.value}>{country.label}</option>
+								{/each}
+			</Select>
 			</div>
-		  </div>
-		  
-		  
-		  
-		  
+					{/if}
+			</div>
+			</div>
 
+			  
   <Button type="submit" style="background-color: #007bff;">Update Profile</Button>
 </form>
 
